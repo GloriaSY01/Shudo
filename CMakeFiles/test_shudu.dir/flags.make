@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = @CMakeFiles/test_shudu.dir/includes_CXX.rsp
 
-CXX_FLAGS = 
+CXX_FLAGS =  -pthread -fprofile-arcs -ftest-coverage -lgcov
 

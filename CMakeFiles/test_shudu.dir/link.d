@@ -1,6 +1,7 @@
 test_shudu.exe: \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/crtbegin.o \
+  D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a \
   CMakeFiles\test_shudu.dir/objects.a \
   E:/code/software_engineer/Shudo/gtest/lib/libgtest.dll \
   E:/code/software_engineer/Shudo/gtest/lib/libgtest.dll \
@@ -17,6 +18,7 @@ test_shudu.exe: \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/libcomdlg32.a \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/libadvapi32.a \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0\libstdc++.a \
+  D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/libmingw32.a \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/libgcc.a \
   D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/libpthread.a \
@@ -46,6 +48,8 @@ test_shudu.exe: \
 D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/crt2.o:
 
 D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/crtbegin.o:
+
+D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a:
 
 CMakeFiles\test_shudu.dir/objects.a:
 
@@ -78,6 +82,8 @@ D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../
 D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/libadvapi32.a:
 
 D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0\libstdc++.a:
+
+D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a:
 
 D:/software/tmdgcc/tmd-gcc-64/bin/../lib/gcc/x86_64-w64-mingw32/10.3.0/../../../../x86_64-w64-mingw32/lib/../lib/libmingw32.a:
 

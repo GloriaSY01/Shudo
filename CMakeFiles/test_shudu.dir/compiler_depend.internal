@@ -170,7 +170,6 @@ CMakeFiles/test_shudu.dir/src/shudu.cpp.obj
  D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/vadefs.h
  D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wchar.h
  D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wctype.h
- E:/code/software_engineer/Shudo/include/shudu.h
 
 CMakeFiles/test_shudu.dir/src/shudu_unittest.cpp.obj
  E:/code/software_engineer/Shudo/src/shudu_unittest.cpp
@@ -441,6 +440,7 @@ test_shudu.exe
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/crtbegin.o
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/crtend.o
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libgcc.a
+ D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libstdc++.a
  E:/code/software_engineer/Shudo/gtest/lib/libgtest.dll
  E:/code/software_engineer/Shudo/gtest/lib/libgtest_main.dll

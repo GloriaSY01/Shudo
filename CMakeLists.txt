@@ -2,7 +2,8 @@
 cmake_minimum_required(VERSION 3.14)
 # 给项目命名
 project(test_shudu)
-
+# 设置代码覆盖率的相关参数
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -fprofile-arcs -ftest-coverage -lgcov")
 # 收集c/c++文件并赋值给变量SRC_LIST_C
 # ${CMAKE_CURRENT_SOURCE_DIR}代表CMakeLists.txt当前项目录
 file(GLOB

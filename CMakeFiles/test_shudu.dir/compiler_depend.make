@@ -168,8 +168,7 @@ CMakeFiles/test_shudu.dir/src/shudu.cpp.obj: src/shudu.cpp \
   D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/time.h \
   D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/vadefs.h \
   D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wchar.h \
-  D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wctype.h \
-  include/shudu.h
+  D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wctype.h
 
 CMakeFiles/test_shudu.dir/src/shudu_unittest.cpp.obj: src/shudu_unittest.cpp \
   D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include-fixed/limits.h \
@@ -438,6 +437,7 @@ test_shudu.exe: CMakeFiles/test_shudu.dir/objects.a \
   D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/crtbegin.o \
   D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/crtend.o \
   D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libgcc.a \
+  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a \
   D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libstdc++.a \
   gtest/lib/libgtest.dll \
   gtest/lib/libgtest_main.dll
@@ -831,10 +831,6 @@ D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wchar.h:
 
 D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/include/wctype.h:
 
-D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/quoted_string.h:
-
-include/shudu.h:
-
 src/shudu_unittest.cpp:
 
 D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/atomic:
@@ -862,6 +858,10 @@ D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/crtbegin.o:
 D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/locale_facets_nonio.h:
 
 D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/locale_facets_nonio.tcc:
+
+include/shudu.h:
+
+D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/quoted_string.h:
 
 D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/refwrap.h:
 
@@ -980,5 +980,7 @@ D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/lib/libpthread.a:
 D:/software/tmdgcc/tmd-gcc-64/x86_64-w64-mingw32/lib/libuser32.a:
 
 D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/crtend.o:
+
+D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/libgcov.a:
 
 gtest/lib/libgtest_main.dll:

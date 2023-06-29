@@ -166,5 +166,4 @@ CMakeFiles/test_shudu.dir/src/shudu.cpp.obj: \
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/numeric \
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/stl_numeric.h \
  D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/sstream \
- D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/sstream.tcc \
- E:/code/software_engineer/Shudo/include/shudu.h
+ D:/software/tmdgcc/tmd-gcc-64/lib/gcc/x86_64-w64-mingw32/10.3.0/include/c++/bits/sstream.tcc

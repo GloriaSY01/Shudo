@@ -8,15 +8,13 @@
 #include <random>
 
 #include <sstream>
-#include "..\include\shudu.h"
 using namespace std;
-/*
+
 typedef struct BlockForSort {
 	int x, y;	//数独空白点的位置
 	int count;			//计数器，用来排序
 	int size;		//一个数独中空白点的个数
 }BLFS;	//用来找最小的块
-
 
 bool judge(int x, int y, int i);
 int getBlockNum(int x, int y);
@@ -25,11 +23,11 @@ int produceOutputIntoTxt(int produce_num);
 int dealQuestion(char* path);
 int dfs(int num, int size);
 void setFlag(int x, int y, int i, int flag);
-*/
+
 namespace DEAL {
 	int col_count[9][10] = { 0 }, row_count[9][10] = { 0 }, block_count[9][10] = { 0 };
 	BLFS bs[100];
-	int map[9][9];
+	int mapp[9][9];
 	//为了防止全局变量混乱，使用了名词空间
 }
 
@@ -143,8 +141,8 @@ int dealQuestion(char* path) {
         for (int i = 0; i < 162; i++) {
             if (shudu[i] == ' ' || shudu[i] == '\n') continue;
             else {
-                if (shudu[i] == '$') map[x][y] = 0;
-                else map[x][y] = int(shudu[i] - '0');
+                if (shudu[i] == '$') mapp[x][y] = 0;
+                else mapp[x][y] = int(shudu[i] - '0');
                 if (y >= 8) {
                     y = 0;
                     x++;
@@ -158,13 +156,13 @@ int dealQuestion(char* path) {
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (map[i][j] == 0) {
+                if (mapp[i][j] == 0) {
                     bs[count_bs].x = i;
                     bs[count_bs].y = j;
                     count_bs++;
                 }
                 else {
-                    sub_map = map[i][j];
+                    sub_map = mapp[i][j];
                     setFlag(i, j, sub_map, 1);
                     _row[i]++;
                     _col[j]++;
@@ -194,8 +192,8 @@ int dealQuestion(char* path) {
 
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (map[i][j] == 0) STORE::store[STORE::count++] = '$';
-                else STORE::store[STORE::count++] = char(map[i][j] + '0');
+                if (mapp[i][j] == 0) STORE::store[STORE::count++] = '$';
+                else STORE::store[STORE::count++] = char(mapp[i][j] + '0');
                 if (j == 8) STORE::store[STORE::count++] = '\n';
                 else STORE::store[STORE::count++] = ' ';
             }
@@ -226,11 +224,11 @@ int dfs(int num, int size) {
 		int x = DEAL::bs[num].x, y = DEAL::bs[num].y;
 		for (int i = 1; i <= 9; i++) {
 			if (judge(x, y, i)) {
-				DEAL::map[x][y] = i;
+				DEAL::mapp[x][y] = i;
 				setFlag(x, y, i, 1);
 				if (dfs(num + 1, size)) return true;
 				setFlag(x, y, i, 0);
-				DEAL::map[x][y] = 0;
+				DEAL::mapp[x][y] = 0;
 			}
 		}
 		return false;
@@ -245,14 +243,14 @@ bool isValid(int row, int col, int num) {
 	using namespace DEAL;
     // 检查行是否合法
     for (int i = 0; i < 9; i++) {
-        if (map[row][i] == num) {
+        if (mapp[row][i] == num) {
             return false;
         }
     }
 
     // 检查列是否合法
     for (int i = 0; i < 9; i++) {
-        if (map[i][col] == num) {
+        if (mapp[i][col] == num) {
             return false;
         }
     }
@@ -262,7 +260,7 @@ bool isValid(int row, int col, int num) {
     int startCol = col - col % 3;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            if (map[i + startRow][j + startCol] == num) {
+            if (mapp[i + startRow][j + startCol] == num) {
                 return false;
             }
         }
@@ -275,17 +273,17 @@ bool solveshudu() {
 	using namespace DEAL;
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
-            if (map[row][col] == 0) {
+            if (mapp[row][col] == 0) {
                 // 尝试填充数字 1-9
                 for (int num = 1; num <= 9; num++) {
                     if (isValid(row, col, num)) {
                         // 填充数字并递归求解
-                        map[row][col] = num;
+                        mapp[row][col] = num;
                         if (solveshudu()) {
                             return true;
                         }
                         // 回溯
-                        map[row][col] = 0;
+                        mapp[row][col] = 0;
                     }
                 }
                 return false;  // 无法填充任何数字
@@ -374,7 +372,7 @@ void generateshudu(int gamesCount, int difficulty) {
         // 初始化数独格子为0
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                map[row][col] = 0;
+                mapp[row][col] = 0;
             }
         }
 
@@ -401,15 +399,15 @@ void generateshudu(int gamesCount, int difficulty) {
         for (int j = 0; j < holesToRemove; j++) {
             int row = positions[j].first;
             int col = positions[j].second;
-            map[row][col] = -1;  // 使用 -1 表示空白处
+            mapp[row][col] = -1;  // 使用 -1 表示空白处
         }
 		// 输出数独游戏到文件中
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (map[row][col] == -1) {
+                if (mapp[row][col] == -1) {
                     outputFile << "$";
                 } else {
-                    outputFile << map[row][col];
+                    outputFile << mapp[row][col];
                 }
 
                 if (col != 8) {
@@ -436,7 +434,7 @@ void generateshudu2(int gamesCount, int min,int max) {
         // 初始化数独格子为0
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                map[row][col] = 0;
+                mapp[row][col] = 0;
             }
         }
 
@@ -458,15 +456,15 @@ void generateshudu2(int gamesCount, int min,int max) {
         for (int j = 0; j < holesToRemove; j++) {
             int row = positions[j].first;
             int col = positions[j].second;
-            map[row][col] = -1;  // 使用 -1 表示空白处
+            mapp[row][col] = -1;  // 使用 -1 表示空白处
         }
 		// 输出数独游戏到文件中
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (map[row][col] == -1) {
+                if (mapp[row][col] == -1) {
                     outputFile << "$";
                 } else {
-                    outputFile << map[row][col];
+                    outputFile << mapp[row][col];
                 }
 
                 if (col != 8) {
@@ -493,7 +491,7 @@ void generateshudu3(int gamesCount, int difficulty) {
         // 初始化数独格子为0
         for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                map[row][col] = 0;
+                mapp[row][col] = 0;
             }
         }
 
@@ -520,17 +518,17 @@ void generateshudu3(int gamesCount, int difficulty) {
         for (int j = 0; j < holesToRemove; j++) {
             int row = positions[j].first;
             int col = positions[j].second;
-            map[row][col] = -1;  // 使用 -1 表示空白处
+            mapp[row][col] = -1;  // 使用 -1 表示空白处
         }
-		int count=countshudusolu(map);
+		int count=countshudusolu(mapp);
 		if(count==1)
 		{
 			for (int row = 0; row < 9; row++) {
             for (int col = 0; col < 9; col++) {
-                if (map[row][col] == -1) {
+                if (mapp[row][col] == -1) {
                     outputFile << "$";
                 } else {
-                    outputFile << map[row][col];
+                    outputFile << mapp[row][col];
                 }
 
                 if (col != 8) {
@@ -560,6 +558,22 @@ std::vector<std::string> splitString(const std::string& str, const std::string& 
     return tokens;
 }
 /*
+int main(int argc,char **argv) {
+    produceOutputIntoTxt(10);
+    generateshudu(10, 1);
+    generateshudu2(10, 5, 10);
+    generateshudu(20, 3);
+    generateshudu3(15, 1);
+    char*a="./shudu_games.txt";
+    dealQuestion(a);
+    char*b="./shudu_games2.txt";
+    dealQuestion(b);
+    char*c="./shudu_games3.txt";
+    dealQuestion(c);
+
+}
+*/
+
 int main(int argc,char **argv) {
 	if (argc == 1) {	//未输入命令行参数，报错并返回
 		cout << "please input command in cmd line" << endl;
@@ -636,4 +650,5 @@ int main(int argc,char **argv) {
 		}
     }
         } 
-		*/
+
+

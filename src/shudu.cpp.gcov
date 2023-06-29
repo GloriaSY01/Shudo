@@ -1,0 +1,657 @@
+        -:    0:Source:shudu.cpp
+        -:    0:Graph:a-shudu.gcno
+        -:    0:Data:a-shudu.gcda
+        -:    0:Runs:1
+        -:    1:#include<iostream>
+        -:    2:#include<cstring>
+        -:    3:#include <algorithm>
+        -:    4:#include <fstream>
+        -:    5:#include <vector>
+        -:    6:#include <cstdlib>
+        -:    7:#include <ctime>
+        -:    8:#include <random>
+        -:    9:
+        -:   10:#include <sstream>
+        -:   11:using namespace std;
+        -:   12:
+        -:   13:typedef struct BlockForSort {
+        -:   14:	int x, y;	//数独空白点的位置
+        -:   15:	int count;			//计数器，用来排序
+        -:   16:	int size;		//一个数独中空白点的个数
+        -:   17:}BLFS;	//用来找最小的块
+        -:   18:
+        -:   19:bool judge(int x, int y, int i);
+        -:   20:int getBlockNum(int x, int y);
+        -:   21:bool cmp(BLFS& a, BLFS& b);
+        -:   22:int produceOutputIntoTxt(int produce_num);
+        -:   23:int dealQuestion(char* path);
+        -:   24:int dfs(int num, int size);
+        -:   25:void setFlag(int x, int y, int i, int flag);
+        -:   26:
+        -:   27:namespace DEAL {
+        -:   28:	int col_count[9][10] = { 0 }, row_count[9][10] = { 0 }, block_count[9][10] = { 0 };
+        -:   29:	BLFS bs[100];
+        -:   30:	int mapp[9][9];
+        -:   31:	//为了防止全局变量混乱，使用了名词空间
+        -:   32:}
+        -:   33:
+        -:   34:namespace STORE {
+        -:   35:	char store[300000000] = { 0 };
+        -:   36:	long count = 0;
+        -:   37:}
+        -:   38:char out[9][9];
+        -:   39:
+ 66613677:   40:int getBlockNum(int x, int y) {
+        -:   41:	//获得空格是哪一块九宫格的的，从零开始计数
+66613677*:   42:	if (x < 0 || y < 0 || x >= 9 || y>8) return -1;
+ 66613677:   43:	return ((x / 3) * 3 + (y / 3));
+        -:   44:}
+        -:   45:
+        -:   46:
+    10491:   47:bool cmp(BLFS& a, BLFS& b) {
+    10491:   48:	return a.count > b.count;
+        -:   49:}
+        1:   50:int produceOutputIntoTxt(int produce_num) {		//本函数用于生成数独终局
+        1:   51:	int count = produce_num;
+        1:   52:	int	trans_arr[9] = { 1,2,3,4,5,6,7,8,9 };	//用来交换的数字
+        1:   53:	int cols[9] = { 0,1,2,3,4,5,6,7,8 };	//用来交换的行
+        -:   54:	int sub;		//一个中间值，后面会用到
+        -:   55:	string table[9] = {	//数独模板
+        -:   56:	"123456789",
+        -:   57:	"456789123",
+        -:   58:	"789123456",
+        -:   59:	"234567891",
+        -:   60:	"567891234",
+        -:   61:	"891234567",
+        -:   62:	"345678912",
+        -:   63:	"678912345",
+        -:   64:	"912345678"
+       11:   65:};
+        1:   66:	if (count <= 0||count>1000000) {
+    #####:   67:		cout << "please input N which>0 and <=1000000" << endl;
+    #####:   68:		return -1;
+        -:   69:	}
+        1:   70:	remove("./shudu_final.txt");
+        1:   71:	FILE* fp = fopen("./shudu_final.txt", "wt");
+        1:   72:	if (fp == NULL) {
+    #####:   73:		cout << "err" << endl;
+    #####:   74:		return -1;
+        -:   75:	}
+        1:   76:	STORE::count = 0;
+        1:   77:	memset(STORE::store, 0, sizeof(STORE::store));
+        -:   78:	do {//前两列的交换
+        -:   79:		do {//三到五列交换
+        -:   80:			do {//六到八列的交换
+        -:   81:				do {//前八个数字的交换
+      100:   82:					for (int i = 0; i < 9; i++) {
+      900:   83:						for (int j = 0; j < 9; j++) {
+      810:   84:							sub = (int)(table[cols[i]][j] - '0') - 1;
+        -:   85:							//将生成的数独终局保存在大数组中，空间换时间
+      810:   86:							STORE::store[STORE::count++] = trans_arr[sub] + '0';
+      810:   87:							if (j == 8)STORE::store[STORE::count++] = '\n';
+      720:   88:							else STORE::store[STORE::count++] = ' ';
+        -:   89:						}
+        -:   90:					}
+       10:   91:					STORE::store[STORE::count++] = '\n';
+       10:   92:					count--;
+       10:   93:					if (count <= 0) {
+        -:   94:						//生成结束，开始将大数组一次写入文件
+        1:   95:						fwrite(STORE::store, sizeof(char), STORE::count, fp);
+        1:   96:						cout << "over create shudu_final" << endl;
+        1:   97:						fclose(fp);
+        1:   98:						return 0;
+        -:   99:					}
+        9:  100:				} while (next_permutation(trans_arr, trans_arr + 8));
+    #####:  101:			} while (next_permutation(cols + 6, cols + 9));
+    #####:  102:		} while (next_permutation(cols + 3, cols + 6));
+    #####:  103:	} while (next_permutation(cols + 1, cols + 3));
+        -:  104:
+    #####:  105:	cout << "over or err" << endl;
+    #####:  106:	return 0;
+       10:  107:}
+        3:  108:int dealQuestion(char* path) {
+        -:  109:    char shudu[1024];
+        -:  110:    int x, y;
+        3:  111:    int _col[9] = { 0 }, _row[9] = { 0 }, _block[9] = { 0 };
+        -:  112:    //分别代表行列以及九宫格里可以填的数字。比如block_count[1][7]=1代表第块已经存在7了。
+        -:  113:    using namespace DEAL;
+        3:  114:    FILE* fp = fopen(path, "r");
+        3:  115:    if (fp == NULL) {
+    #####:  116:        cout << "error open file, please check the question file path" << endl;
+    #####:  117:        return -1;
+        -:  118:    }
+        3:  119:    int soku_num = 0;
+        -:  120:    do {
+       48:  121:        memset(shudu, 0, sizeof(shudu));
+       48:  122:        if (fread(shudu, sizeof(char), 163 * sizeof(char), fp) < 162) {        //读到少于一个数独问题的字符
+        3:  123:            if (feof(fp)) break; //判断是否到文件尾
+        -:  124:            else {        //出错，终止
+    #####:  125:                cout << "error read file" << endl;
+    #####:  126:                return -1;
+        -:  127:            }
+        -:  128:        };
+       45:  129:        x = 0; y = 0;
+        -:  130:
+        -:  131:        {            //用来初始化一些值
+       45:  132:            memset(bs, 0, sizeof(bs));
+       45:  133:            memset(_col, 0, sizeof(_col));
+       45:  134:            memset(_block, 0, sizeof(_block));
+       45:  135:            memset(_row, 0, sizeof(_row));
+       45:  136:            memset(row_count, 0, sizeof(row_count));
+       45:  137:            memset(col_count, 0, sizeof(col_count));
+       45:  138:            memset(block_count, 0, sizeof(block_count));
+        -:  139:        }
+        -:  140:
+     7335:  141:        for (int i = 0; i < 162; i++) {
+     7290:  142:            if (shudu[i] == ' ' || shudu[i] == '\n') continue;
+        -:  143:            else {
+     3645:  144:                if (shudu[i] == '$') mapp[x][y] = 0;
+     1740:  145:                else mapp[x][y] = int(shudu[i] - '0');
+     3645:  146:                if (y >= 8) {
+      405:  147:                    y = 0;
+      405:  148:                    x++;
+        -:  149:                }
+     3240:  150:                else y++;
+        -:  151:            }
+        -:  152:        }
+        -:  153:        //将数独文件转化为int型存储
+       45:  154:        int count_bs = 0;
+        -:  155:        int sub_map;
+        -:  156:
+      450:  157:        for (int i = 0; i < 9; i++) {
+     4050:  158:            for (int j = 0; j < 9; j++) {
+     3645:  159:                if (mapp[i][j] == 0) {
+     1905:  160:                    bs[count_bs].x = i;
+     1905:  161:                    bs[count_bs].y = j;
+     1905:  162:                    count_bs++;
+        -:  163:                }
+        -:  164:                else {
+     1740:  165:                    sub_map = mapp[i][j];
+     1740:  166:                    setFlag(i, j, sub_map, 1);
+     1740:  167:                    _row[i]++;
+     1740:  168:                    _col[j]++;
+     1740:  169:                    _block[getBlockNum(i, j)]++;
+        -:  170:                }
+        -:  171:            }
+        -:  172:        }
+        -:  173:
+       45:  174:        x = 0; y = 0;
+     1950:  175:        for (int i = 0; i < count_bs; i++) {
+     1905:  176:            x = bs[i].x; y = bs[i].y;
+     1905:  177:            bs[i].count = _row[x] + _col[y] + _block[getBlockNum(x, y)];
+        -:  178:        }//记录空白格周围已经占用的点，占用的越多这个点的搜索优先级越高，越先搜索
+        -:  179:
+       45:  180:        sort(bs, bs + count_bs, cmp);    //排序，把count高的值排到前面
+        -:  181:
+      45*:  182:        if (dfs(0, count_bs) == false) {
+    #####:  183:            printf("error dfs\n");
+    #####:  184:            cout << "shudu error" << soku_num << endl;
+    #####:  185:            if (soku_num >= 100) {
+    #####:  186:                printf("too much error, please check the question file\n");
+    #####:  187:                return -1;
+        -:  188:            }//出错一百个以上直接结束
+    #####:  189:            soku_num++;
+    #####:  190:            continue;
+        -:  191:        }
+        -:  192:
+      450:  193:        for (int i = 0; i < 9; i++) {
+     4050:  194:            for (int j = 0; j < 9; j++) {
+    3645*:  195:                if (mapp[i][j] == 0) STORE::store[STORE::count++] = '$';
+     3645:  196:                else STORE::store[STORE::count++] = char(mapp[i][j] + '0');
+     3645:  197:                if (j == 8) STORE::store[STORE::count++] = '\n';
+     3240:  198:                else STORE::store[STORE::count++] = ' ';
+        -:  199:            }
+        -:  200:        }
+       45:  201:        STORE::store[STORE::count++] = '\n';
+        -:  202:        //将数独结果存储到大数组里，空间换时间
+       45:  203:    } while (!feof(fp));
+        3:  204:    FILE* wrfp = fopen("./shudu_result.txt", "wt");
+        3:  205:    fwrite(STORE::store, sizeof(char), STORE::count, wrfp);    //将大数组写入文件
+        3:  206:    fclose(wrfp);
+        3:  207:    fclose(fp);
+        3:  208:    cout << "over deal question" << endl;
+        3:  209:    return 0;
+        -:  210:}
+        -:  211:
+        -:  212:
+ 35755259:  213:void setFlag(int x, int y, int i, int flag) {
+ 35755259:  214:	DEAL::col_count[y][i] = flag;
+ 35755259:  215:	DEAL::row_count[x][i] = flag;
+ 35755259:  216:	DEAL::block_count[getBlockNum(x, y)][i] = flag;
+ 35755259:  217:}
+        -:  218:
+ 17877757:  219:int dfs(int num, int size) {
+ 17877757:  220:	if (num == size) {
+       45:  221:		return true;
+        -:  222:	}
+        -:  223:	else {
+ 17877712:  224:		int x = DEAL::bs[num].x, y = DEAL::bs[num].y;
+178767541:  225:		for (int i = 1; i <= 9; i++) {
+160891734:  226:			if (judge(x, y, i)) {
+ 17877712:  227:				DEAL::mapp[x][y] = i;
+ 17877712:  228:				setFlag(x, y, i, 1);
+ 17877712:  229:				if (dfs(num + 1, size)) return true;
+ 17875807:  230:				setFlag(x, y, i, 0);
+ 17875807:  231:				DEAL::mapp[x][y] = 0;
+        -:  232:			}
+        -:  233:		}
+ 17875807:  234:		return false;
+        -:  235:	}
+        -:  236:}
+        -:  237:
+160891734:  238:bool judge(int x, int y, int i) {
+160891734:  239:	return !DEAL::col_count[y][i] && !DEAL::row_count[x][i] && !DEAL::block_count[getBlockNum(x, y)][i];
+        -:  240:}
+        -:  241:
+   175725:  242:bool isValid(int row, int col, int num) {
+        -:  243:	using namespace DEAL;
+        -:  244:    // 检查行是否合法
+  1004190:  245:    for (int i = 0; i < 9; i++) {
+   950840:  246:        if (mapp[row][i] == num) {
+   122375:  247:            return false;
+        -:  248:        }
+        -:  249:    }
+        -:  250:
+        -:  251:    // 检查列是否合法
+   401390:  252:    for (int i = 0; i < 9; i++) {
+   365365:  253:        if (mapp[i][col] == num) {
+    17325:  254:            return false;
+        -:  255:        }
+        -:  256:    }
+        -:  257:
+        -:  258:    // 检查小九宫格是否合法
+    36025:  259:    int startRow = row - row % 3;
+    36025:  260:    int startCol = col - col % 3;
+   101035:  261:    for (int i = 0; i < 3; i++) {
+   292215:  262:        for (int j = 0; j < 3; j++) {
+   227205:  263:            if (mapp[i + startRow][j + startCol] == num) {
+    14520:  264:                return false;
+        -:  265:            }
+        -:  266:        }
+        -:  267:    }
+        -:  268:
+    21505:  269:    return true;
+        -:  270:}
+        -:  271:// 使用回溯算法填充数独格子
+    21560:  272:bool solveshudu() {
+        -:  273:	using namespace DEAL;
+    69960:  274:    for (int row = 0; row < 9; row++) {
+   636020:  275:        for (int col = 0; col < 9; col++) {
+   587620:  276:            if (mapp[row][col] == 0) {
+        -:  277:                // 尝试填充数字 1-9
+   192775:  278:                for (int num = 1; num <= 9; num++) {
+   175725:  279:                    if (isValid(row, col, num)) {
+        -:  280:                        // 填充数字并递归求解
+    21505:  281:                        mapp[row][col] = num;
+    21505:  282:                        if (solveshudu()) {
+     4455:  283:                            return true;
+        -:  284:                        }
+        -:  285:                        // 回溯
+    17050:  286:                        mapp[row][col] = 0;
+        -:  287:                    }
+        -:  288:                }
+    17050:  289:                return false;  // 无法填充任何数字
+        -:  290:            }
+        -:  291:        }
+        -:  292:    }
+       55:  293:    return true;  // 数独已填充完成
+        -:  294:}
+    #####:  295:bool isValid2(int puzzle[9][9], int row, int col, int num) {
+        -:  296:    // 检查同一行是否存在重复数字
+    #####:  297:    for (int i = 0; i < 9; i++) {
+    #####:  298:        if (puzzle[row][i] == num) {
+    #####:  299:            return false;
+        -:  300:        }
+        -:  301:    }
+        -:  302:
+        -:  303:    // 检查同一列是否存在重复数字
+    #####:  304:    for (int i = 0; i < 9; i++) {
+    #####:  305:        if (puzzle[i][col] == num) {
+    #####:  306:            return false;
+        -:  307:        }
+        -:  308:    }
+        -:  309:
+        -:  310:    // 检查 3x3 方格内是否存在重复数字
+    #####:  311:    int startRow = row - row % 3;
+    #####:  312:    int startCol = col - col % 3;
+    #####:  313:    for (int i = 0; i < 3; i++) {
+    #####:  314:        for (int j = 0; j < 3; j++) {
+    #####:  315:            if (puzzle[startRow + i][startCol + j] == num) {
+    #####:  316:                return false;
+        -:  317:            }
+        -:  318:        }
+        -:  319:    }
+        -:  320:
+    #####:  321:    return true;
+        -:  322:}
+       15:  323:int countshudusolu(int puzzle[9][9]) {
+       15:  324:    int count = 0;
+       15:  325:    int row = -1;
+       15:  326:    int col = -1;
+       15:  327:    bool isEmpty = false;
+        -:  328:
+        -:  329:    // 查找下一个空白格子
+      150:  330:    for (int i = 0; i < 9; i++) {
+     1350:  331:        for (int j = 0; j < 9; j++) {
+     1215:  332:            if (puzzle[i][j] == 0) {
+    #####:  333:                row = i;
+    #####:  334:                col = j;
+    #####:  335:                isEmpty = true;
+    #####:  336:                break;
+        -:  337:            }
+        -:  338:        }
+      135:  339:        if (isEmpty) {
+    #####:  340:            break;
+        -:  341:        }
+        -:  342:    }
+        -:  343:
+        -:  344:    // 数独已经填满，找到一个解
+       15:  345:    if (!isEmpty) {
+       15:  346:        return 1;
+        -:  347:    }
+        -:  348:
+        -:  349:    // 尝试填充数字 1-9
+    #####:  350:    for (int num = 1; num <= 9; num++) {
+    #####:  351:        if (isValid2(puzzle, row, col, num)) {
+    #####:  352:            puzzle[row][col] = num;
+        -:  353:
+    #####:  354:            count += countshudusolu(puzzle);
+        -:  355:
+    #####:  356:            puzzle[row][col] = 0; // 恢复为未填入状态，继续搜索其他解
+        -:  357:        }
+        -:  358:    }
+        -:  359:
+    #####:  360:    return count;
+        -:  361:}
+        -:  362:
+        -:  363:// 生成数独游戏(不同难度或数量)
+        2:  364:void generateshudu(int gamesCount, int difficulty) {
+        -:  365:	using namespace DEAL;
+        2:  366:    random_device rd;
+        2:  367:    mt19937 gen(rd());
+        -:  368:
+        2:  369:    ofstream outputFile("shudu_games.txt");  // 打开输出文件
+        -:  370:
+       32:  371:    for (int i = 0; i < gamesCount; i++) {
+        -:  372:        // 初始化数独格子为0
+      300:  373:        for (int row = 0; row < 9; row++) {
+     2700:  374:            for (int col = 0; col < 9; col++) {
+     2430:  375:                mapp[row][col] = 0;
+        -:  376:            }
+        -:  377:        }
+        -:  378:
+       30:  379:        solveshudu();  // 填充数独格子
+        -:  380:		// 随机挖洞以创建不同的难度
+       30:  381:        int holesToRemove = 0;
+       30:  382:        if (difficulty == 1) {
+       10:  383:            holesToRemove = 40;  // 简单难度
+       20:  384:        } else if (difficulty == 2) {
+    #####:  385:            holesToRemove = 50;  // 中等难度
+       20:  386:        } else if (difficulty == 3) {
+       20:  387:            holesToRemove = 60;  // 困难难度
+        -:  388:        }
+        -:  389:
+       30:  390:        vector<pair<int, int>> positions;
+      300:  391:        for (int row = 0; row < 9; row++) {
+     2700:  392:            for (int col = 0; col < 9; col++) {
+     2430:  393:                positions.push_back(make_pair(row, col));
+        -:  394:            }
+        -:  395:        }
+        -:  396:
+       30:  397:        shuffle(positions.begin(), positions.end(), gen);
+        -:  398:
+     1630:  399:        for (int j = 0; j < holesToRemove; j++) {
+     1600:  400:            int row = positions[j].first;
+     1600:  401:            int col = positions[j].second;
+     1600:  402:            mapp[row][col] = -1;  // 使用 -1 表示空白处
+        -:  403:        }
+        -:  404:		// 输出数独游戏到文件中
+      300:  405:        for (int row = 0; row < 9; row++) {
+     2700:  406:            for (int col = 0; col < 9; col++) {
+     2430:  407:                if (mapp[row][col] == -1) {
+     1600:  408:                    outputFile << "$";
+        -:  409:                } else {
+      830:  410:                    outputFile << mapp[row][col];
+        -:  411:                }
+        -:  412:
+     2430:  413:                if (col != 8) {
+     2160:  414:                    outputFile << " ";
+        -:  415:                }
+        -:  416:            }
+      270:  417:            outputFile << endl;
+        -:  418:        }
+        -:  419:
+       30:  420:        outputFile << endl;  // 添加空行分隔不同的数独游戏
+       30:  421:    }
+        -:  422:
+        2:  423:    outputFile.close();  // 关闭输出文件
+        2:  424:}
+        -:  425:// 生成数独游戏(制定挖空数目)
+        1:  426:void generateshudu2(int gamesCount, int min,int max) {
+        -:  427:	using namespace DEAL;
+        1:  428:    random_device rd;
+        1:  429:    mt19937 gen(rd());
+        -:  430:
+        1:  431:    ofstream outputFile("shudu_games2.txt");  // 打开输出文件
+        -:  432:
+       11:  433:    for (int i = 0; i < gamesCount; i++) {
+        -:  434:        // 初始化数独格子为0
+      100:  435:        for (int row = 0; row < 9; row++) {
+      900:  436:            for (int col = 0; col < 9; col++) {
+      810:  437:                mapp[row][col] = 0;
+        -:  438:            }
+        -:  439:        }
+        -:  440:
+       10:  441:        solveshudu();  // 填充数独格子
+        -:  442:		// 随机挖洞以创建不同的难度
+       10:  443:        int holesToRemove = 0;
+       10:  444:        int min=2;
+       10:  445:    	int max=17;
+       10:  446:    	holesToRemove=(rand()%(max-min+1))+ min;
+       10:  447:        vector<pair<int, int>> positions;
+      100:  448:        for (int row = 0; row < 9; row++) {
+      900:  449:            for (int col = 0; col < 9; col++) {
+      810:  450:                positions.push_back(make_pair(row, col));
+        -:  451:            }
+        -:  452:        }
+        -:  453:
+       10:  454:        shuffle(positions.begin(), positions.end(), gen);
+        -:  455:
+      115:  456:        for (int j = 0; j < holesToRemove; j++) {
+      105:  457:            int row = positions[j].first;
+      105:  458:            int col = positions[j].second;
+      105:  459:            mapp[row][col] = -1;  // 使用 -1 表示空白处
+        -:  460:        }
+        -:  461:		// 输出数独游戏到文件中
+      100:  462:        for (int row = 0; row < 9; row++) {
+      900:  463:            for (int col = 0; col < 9; col++) {
+      810:  464:                if (mapp[row][col] == -1) {
+      105:  465:                    outputFile << "$";
+        -:  466:                } else {
+      705:  467:                    outputFile << mapp[row][col];
+        -:  468:                }
+        -:  469:
+      810:  470:                if (col != 8) {
+      720:  471:                    outputFile << " ";
+        -:  472:                }
+        -:  473:            }
+       90:  474:            outputFile << endl;
+        -:  475:        }
+        -:  476:
+       10:  477:        outputFile << endl;  // 添加空行分隔不同的数独游戏
+       10:  478:    }
+        -:  479:
+        1:  480:    outputFile.close();  // 关闭输出文件
+        1:  481:}
+        -:  482:// 生成数独游戏(唯一解)
+        1:  483:void generateshudu3(int gamesCount, int difficulty) {
+        -:  484:	using namespace DEAL;
+        1:  485:    random_device rd;
+        1:  486:    mt19937 gen(rd());
+        -:  487:
+        1:  488:    ofstream outputFile("shudu_games3.txt");  // 打开输出文件
+        -:  489:
+       16:  490:    for (int i = 0; i < gamesCount; i++) {
+        -:  491:        // 初始化数独格子为0
+      150:  492:        for (int row = 0; row < 9; row++) {
+     1350:  493:            for (int col = 0; col < 9; col++) {
+     1215:  494:                mapp[row][col] = 0;
+        -:  495:            }
+        -:  496:        }
+        -:  497:
+       15:  498:        solveshudu();  // 填充数独格子
+        -:  499:		// 随机挖洞以创建不同的难度
+       15:  500:        int holesToRemove = 0;
+       15:  501:        if (difficulty == 1) {
+       15:  502:            holesToRemove = 40;  // 简单难度
+    #####:  503:        } else if (difficulty == 2) {
+    #####:  504:            holesToRemove = 50;  // 中等难度
+    #####:  505:        } else if (difficulty == 3) {
+    #####:  506:            holesToRemove = 60;  // 困难难度
+        -:  507:        }
+        -:  508:
+       15:  509:        vector<pair<int, int>> positions;
+      150:  510:        for (int row = 0; row < 9; row++) {
+     1350:  511:            for (int col = 0; col < 9; col++) {
+     1215:  512:                positions.push_back(make_pair(row, col));
+        -:  513:            }
+        -:  514:        }
+        -:  515:
+       15:  516:        shuffle(positions.begin(), positions.end(), gen);
+        -:  517:
+      615:  518:        for (int j = 0; j < holesToRemove; j++) {
+      600:  519:            int row = positions[j].first;
+      600:  520:            int col = positions[j].second;
+      600:  521:            mapp[row][col] = -1;  // 使用 -1 表示空白处
+        -:  522:        }
+       15:  523:		int count=countshudusolu(mapp);
+       15:  524:		if(count==1)
+        -:  525:		{
+      150:  526:			for (int row = 0; row < 9; row++) {
+     1350:  527:            for (int col = 0; col < 9; col++) {
+     1215:  528:                if (mapp[row][col] == -1) {
+      600:  529:                    outputFile << "$";
+        -:  530:                } else {
+      615:  531:                    outputFile << mapp[row][col];
+        -:  532:                }
+        -:  533:
+     1215:  534:                if (col != 8) {
+     1080:  535:                    outputFile << " ";
+        -:  536:                }
+        -:  537:            }
+      135:  538:            outputFile << endl;
+        -:  539:        }
+       15:  540:        outputFile << endl;  // 添加空行分隔不同的数独游戏
+        -:  541:		}
+    #####:  542:		else i--;
+       15:  543:    }
+        -:  544:
+        1:  545:    outputFile.close();  // 关闭输出文件
+        1:  546:}
+        -:  547:
+        -:  548:// 函数：字符串分割
+    #####:  549:std::vector<std::string> splitString(const std::string& str, const std::string& delimiter) {
+    #####:  550:    std::vector<std::string> tokens;
+    #####:  551:    size_t pos = 0;
+    #####:  552:    size_t lastPos = 0;
+    #####:  553:    while ((pos = str.find(delimiter, lastPos)) != std::string::npos) {
+    #####:  554:        tokens.push_back(str.substr(lastPos, pos - lastPos));
+    #####:  555:        lastPos = pos + delimiter.length();
+        -:  556:    }
+    #####:  557:    tokens.push_back(str.substr(lastPos));
+    #####:  558:    return tokens;
+    =====:  559:}
+        -:  560:/*
+        -:  561:int main(int argc,char **argv) {
+        -:  562:	if (argc == 1) {	//未输入命令行参数，报错并返回
+        -:  563:		cout << "please input command in cmd line" << endl;
+        -:  564:		return 0;
+        -:  565:	}
+        -:  566:	else {
+        -:  567:		if (!strcmp(argv[1], "-c")) {
+        -:  568:			int produce_num = atoi(argv[2]);
+        -:  569:			//若无法转换则代表存在非法输入
+        -:  570:			if (produce_num!=0) {
+        -:  571:				int produce_num = atoi(argv[2]);
+        -:  572:				if (produceOutputIntoTxt(produce_num) == -1) {
+        -:  573:					cout << "终局生成失败" << endl;
+        -:  574:					return -1;
+        -:  575:				}
+        -:  576:			}
+        -:  577:			else {
+        -:  578:				cout << "please input number after -c" << endl;
+        -:  579:				return 0;
+        -:  580:			}
+        -:  581:		}
+        -:  582:		else if (!strcmp(argv[1], "-s")) {
+        -:  583:			if (dealQuestion(argv[2]) == -1) {
+        -:  584:				cout << "error deal shudu question" << endl;
+        -:  585:					return -1;
+        -:  586:			}
+        -:  587:		}
+        -:  588:		else if (!strcmp(argv[1], "-n")) {
+        -:  589:            if (argc == 3) {
+        -:  590:                int numPuzzles = atoi(argv[2]);
+        -:  591:                if (numPuzzles > 0) {
+        -:  592:                    generateshudu(numPuzzles, 1);  // 生成初级难度的数独游戏
+        -:  593:                    cout << "Successfully generated " << numPuzzles << " shudu games of easy difficulty in shudu_games.txt" << endl;
+        -:  594:                } 
+        -:  595:			}
+        -:  596:			else if (string(argv[3]) == "-r") {
+        -:  597:				int numPuzzles = atoi(argv[2]);
+        -:  598:            	string range = argv[4];
+        -:  599:				std::vector<std::string> rangeParams = splitString(range, "~");
+        -:  600:        		if (rangeParams.size() != 2) {
+        -:  601:            		std::cout << "Invalid range parameter." << std::endl;
+        -:  602:            		return 0;
+        -:  603:        		}
+        -:  604:        		int minHoles = std::stoi(rangeParams[0]);
+        -:  605:        		int maxHoles = std::stoi(rangeParams[1]);
+        -:  606:            	generateshudu2(numPuzzles, minHoles, maxHoles);
+        -:  607:            	cout << "Successfully generated " << numPuzzles << " shudu games with holes count ranging from "
+        -:  608:                     	<< minHoles << " to " << maxHoles << "." << endl;
+        -:  609:            } 
+        -:  610:			else if(string(argv[3]) == "-m"){
+        -:  611:				int numPuzzles = atoi(argv[2]);
+        -:  612:                int difficulty = atoi(argv[4]);
+        -:  613:                if (numPuzzles > 0 && (difficulty >= 1 && difficulty <= 3)) {
+        -:  614:                    generateshudu(numPuzzles, difficulty);
+        -:  615:                    cout << "Successfully generated " << numPuzzles << " shudu games of difficulty " << difficulty << " in shudu_games.txt" << endl;
+        -:  616:                } else {
+        -:  617:                    cout << "Please input a valid number of games and difficulty level." << endl;
+        -:  618:                }
+        -:  619:			}
+        -:  620:			else if(string(argv[3]) == "-u"){
+        -:  621:				int numPuzzles = atoi(argv[2]);
+        -:  622:				if (numPuzzles > 0) {
+        -:  623:                    generateshudu3(numPuzzles, 1);  // 生成初级难度的唯一解数独游戏
+        -:  624:                    cout << "Successfully generated " << numPuzzles << " shudu games which has only one solu in shudu_games3.txt" << endl;
+        -:  625:                } 
+        -:  626:			}
+        -:  627:			else {
+        -:  628:                cout << "Invalid range format. Please use the format 'min~max', where min and max are positive integers." << endl;
+        -:  629:            }
+        -:  630:    }
+        -:  631:	else {	//错误输入，报错
+        -:  632:			cout << "input cmd error!" << endl;
+        -:  633:			return 0;
+        -:  634:		}
+        -:  635:    }
+        -:  636:        } 
+        -:  637:*/
+        -:  638:
+        1:  639:int main(int argc,char **argv) {
+        1:  640:    produceOutputIntoTxt(10);
+        1:  641:    generateshudu(10, 1);
+        1:  642:    generateshudu2(10, 5, 10);
+        1:  643:    generateshudu(20, 3);
+        1:  644:    generateshudu3(15, 1);
+        1:  645:    char*a="./shudu_games.txt";
+        1:  646:    dealQuestion(a);
+        1:  647:    char*b="./shudu_games2.txt";
+        1:  648:    dealQuestion(b);
+        1:  649:    char*c="./shudu_games3.txt";
+        1:  650:    dealQuestion(c);
+        -:  651:
+        1:  652:}
+        -:  653:
