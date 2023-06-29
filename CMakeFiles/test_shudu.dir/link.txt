@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\test_shudu.dir/objects.a
+D:\software\tmdgcc\tmd-gcc-64\bin\ar.exe qc CMakeFiles\test_shudu.dir/objects.a @CMakeFiles\test_shudu.dir\objects1.rsp
+D:\software\tmdgcc\tmd-gcc-64\bin\c++.exe -Wl,--dependency-file,CMakeFiles\test_shudu.dir\link.d -Wl,--whole-archive CMakeFiles\test_shudu.dir/objects.a -Wl,--no-whole-archive -o test_shudu.exe -Wl,--out-implib,libtest_shudu.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\test_shudu.dir\linkLibs.rsp

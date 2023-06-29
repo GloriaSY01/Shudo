@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\sample1.dir/objects.a
+D:\software\tmdgcc\tmd-gcc-64\bin\ar.exe qc CMakeFiles\sample1.dir/objects.a @CMakeFiles\sample1.dir\objects1.rsp
+D:\software\tmdgcc\tmd-gcc-64\bin\c++.exe -Wl,--dependency-file,CMakeFiles\sample1.dir\link.d -Wl,--whole-archive CMakeFiles\sample1.dir/objects.a -Wl,--no-whole-archive -o sample1.exe -Wl,--out-implib,libsample1.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\sample1.dir\linkLibs.rsp
