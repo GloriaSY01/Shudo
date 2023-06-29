@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <random>
+
+#include <sstream>
 using namespace std;
 using namespace std;
 
@@ -104,109 +106,6 @@ int produceOutputIntoTxt(int produce_num) {		//本函数用于生成数独终局
 	cout << "over or err" << endl;
 	return 0;
 }
-/*
-int dealQuestion(char* path) {
-	char shudu[1024];
-	int x, y;
-	int _col[9] = { 0 }, _row[9] = { 0 }, _block[9] = { 0 };
-	//分别代表行列以及九宫格里可以填的数字。比如block_count[1][7]=1代表第块已经存在7了。
-	using namespace DEAL;
-	FILE* fp = fopen(path, "r");
-	if (fp == NULL) {
-		cout << "error open file,please check the question file path" << endl;
-		return -1;
-	}
-	int soku_num = 0;
-	do {
-		memset(shudu, 0, sizeof(shudu));
-		if (fread(shudu, sizeof(char), 163 * sizeof(char), fp) < 162) {		//读到少于一个数独问题的字符
-			if (feof(fp)) break;//判断是否到文件尾
-			else {		//出错，终止
-				cout << "error read file" << endl;
-				return -1;
-			}
-		};
-		x = 0; y = 0;
-
-		{			//用来初始化一些值
-			memset(bs, 0, sizeof(bs));
-			memset(_col, 0, sizeof(_col));
-			memset(_block, 0, sizeof(_block));
-			memset(_row, 0, sizeof(_row));
-			memset(row_count, 0, sizeof(row_count));
-			memset(col_count, 0, sizeof(col_count));
-			memset(block_count, 0, sizeof(block_count));
-		}
-
-		for (int i = 0; i < 162; i++) {
-			if (shudu[i] == ' ' || shudu[i] == '\n') continue;
-			else {
-				map[x][y] = int(shudu[i] - '0');
-				if (y >= 8) {
-					y = 0;
-					x++;
-				}
-				else y++;
-			}
-		}
-		//将数独文件转化为int型存储
-		int count_bs = 0;
-		int sub_map;
-
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				if (map[i][j] == 0) {
-					bs[count_bs].x = i;
-					bs[count_bs].y = j;
-					count_bs++;
-				}
-				else {
-					sub_map = map[i][j];
-					setFlag(i, j, sub_map, 1);
-					_row[i]++;
-					_col[j]++;
-					_block[getBlockNum(i, j)]++;
-				}
-			}
-		}
-
-		x = 0; y = 0;
-		for (int i = 0; i < count_bs; i++) {
-			x = bs[i].x; y = bs[i].y;
-			bs[i].count = _row[x] + _col[y] + _block[getBlockNum(x, y)];
-		}//记录空白格周围已经占用的点，占用的越多这个点的搜索优先级越高，越先搜索
-
-		sort(bs, bs + count_bs, cmp);	//排序，把count高的值排到前面
-
-		if (dfs(0, count_bs) == false) {
-			printf("error dfs\n");
-			cout << "shudu error" << soku_num << endl;
-			if (soku_num >= 100) {
-				printf("too much error，please check the question file\n");
-				return -1;
-			}//出错一百个以上直接结束
-			soku_num++;
-			continue;
-		}
-
-		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				STORE::store[STORE::count++] = char(map[i][j] + '0');
-				if (j == 8)STORE::store[STORE::count++] = '\n';
-				else STORE::store[STORE::count++] = ' ';
-			}
-		}
-		STORE::store[STORE::count++] = '\n';
-		//将数独结果存储到大数组里，空间换时间
-	} while (!feof(fp));
-	FILE* wrfp = fopen("./shudu_result.txt", "wt");
-	fwrite(STORE::store, sizeof(char), STORE::count, wrfp);	//将大数组写入文件
-	fclose(wrfp);
-	fclose(fp);
-	cout << "over deal question" << endl;
-	return 0;
-}
-*/
 int dealQuestion(char* path) {
     char shudu[1024];
     int x, y;
@@ -340,56 +239,7 @@ int dfs(int num, int size) {
 bool judge(int x, int y, int i) {
 	return !DEAL::col_count[y][i] && !DEAL::row_count[x][i] && !DEAL::block_count[getBlockNum(x, y)][i];
 }
-/*
-// 用于生成随机数的全局随机引擎
-random_device rd;
-mt19937 gen(rd());
 
-// 数独谜题生成函数
-vector<vector<int>> generateSudokuPuzzle() {
-    vector<vector<int>> puzzle(9, vector<int>(9, 0));
-
-    // 初始化数独谜题为1-9的递增序列
-    int num = 1;
-    for (int i = 0; i < 9; ++i) {
-        for (int j = 0; j < 9; ++j) {
-            puzzle[i][j] = num;
-            num = (num % 9) + 1;
-        }
-        num = (num + 2) % 9 + 1;
-    }
-
-    // 随机打乱数独谜题的行、列和数字
-    shuffle(puzzle.begin(), puzzle.end(), gen);
-    for (int i = 0; i < 9; ++i) {
-        shuffle(puzzle[i].begin(), puzzle[i].end(), gen);
-    }
-    shuffle(puzzle.begin(), puzzle.end(), gen);
-
-    return puzzle;
-}
-
-// 保存数独谜题到文件
-void savePuzzleToFile(const vector<vector<int>>& puzzle, const string& filename) {
-    ofstream file(filename, ios::app);  // 使用追加模式打开文件
-    if (file.is_open()) {
-        for (const auto& row : puzzle) {
-            for (int num : row) {
-                if (num == 0) {
-                    file << "$ ";
-                } else {
-                    file << num << " ";
-                }
-            }
-            file << endl;
-        }
-        cout << "Puzzles appended to " << filename << endl;
-    } else {
-        cout << "Failed to save puzzles to file" << endl;
-    }
-}
-
-*/
 bool isValid(int row, int col, int num) {
 	using namespace DEAL;
     // 检查行是否合法
@@ -420,7 +270,7 @@ bool isValid(int row, int col, int num) {
     return true;
 }
 // 使用回溯算法填充数独格子
-bool solveSudoku() {
+bool solveshudu() {
 	using namespace DEAL;
     for (int row = 0; row < 9; row++) {
         for (int col = 0; col < 9; col++) {
@@ -430,7 +280,7 @@ bool solveSudoku() {
                     if (isValid(row, col, num)) {
                         // 填充数字并递归求解
                         map[row][col] = num;
-                        if (solveSudoku()) {
+                        if (solveshudu()) {
                             return true;
                         }
                         // 回溯
@@ -443,13 +293,13 @@ bool solveSudoku() {
     }
     return true;  // 数独已填充完成
 }
-// 生成数独游戏
-void generateSudokuGame(int gamesCount, int difficulty) {
+// 生成数独游戏(不同难度或数量)
+void generateshudu(int gamesCount, int difficulty) {
 	using namespace DEAL;
     random_device rd;
     mt19937 gen(rd());
 
-    ofstream outputFile("sudoku_games.txt");  // 打开输出文件
+    ofstream outputFile("shudu_games.txt");  // 打开输出文件
 
     for (int i = 0; i < gamesCount; i++) {
         // 初始化数独格子为0
@@ -459,7 +309,7 @@ void generateSudokuGame(int gamesCount, int difficulty) {
             }
         }
 
-        solveSudoku();  // 填充数独格子
+        solveshudu();  // 填充数独格子
 		// 随机挖洞以创建不同的难度
         int holesToRemove = 0;
         if (difficulty == 1) {
@@ -505,6 +355,77 @@ void generateSudokuGame(int gamesCount, int difficulty) {
 
     outputFile.close();  // 关闭输出文件
 }
+// 生成数独游戏(制定挖空数目)
+void generateshudu2(int gamesCount, int min,int max) {
+	using namespace DEAL;
+    random_device rd;
+    mt19937 gen(rd());
+
+    ofstream outputFile("shudu_games2.txt");  // 打开输出文件
+
+    for (int i = 0; i < gamesCount; i++) {
+        // 初始化数独格子为0
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                map[row][col] = 0;
+            }
+        }
+
+        solveshudu();  // 填充数独格子
+		// 随机挖洞以创建不同的难度
+        int holesToRemove = 0;
+        int min=2;
+    	int max=17;
+    	holesToRemove=(rand()%(max-min+1))+ min;
+        vector<pair<int, int>> positions;
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                positions.push_back(make_pair(row, col));
+            }
+        }
+
+        shuffle(positions.begin(), positions.end(), gen);
+
+        for (int j = 0; j < holesToRemove; j++) {
+            int row = positions[j].first;
+            int col = positions[j].second;
+            map[row][col] = -1;  // 使用 -1 表示空白处
+        }
+		// 输出数独游戏到文件中
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (map[row][col] == -1) {
+                    outputFile << "$";
+                } else {
+                    outputFile << map[row][col];
+                }
+
+                if (col != 8) {
+                    outputFile << " ";
+                }
+            }
+            outputFile << endl;
+        }
+
+        outputFile << endl;  // 添加空行分隔不同的数独游戏
+    }
+
+    outputFile.close();  // 关闭输出文件
+}
+
+
+// 函数：字符串分割
+std::vector<std::string> splitString(const std::string& str, const std::string& delimiter) {
+    std::vector<std::string> tokens;
+    size_t pos = 0;
+    size_t lastPos = 0;
+    while ((pos = str.find(delimiter, lastPos)) != std::string::npos) {
+        tokens.push_back(str.substr(lastPos, pos - lastPos));
+        lastPos = pos + delimiter.length();
+    }
+    tokens.push_back(str.substr(lastPos));
+    return tokens;
+}
 
 int main(int argc,char **argv) {
 	if (argc == 1) {	//未输入命令行参数，报错并返回
@@ -537,35 +458,42 @@ int main(int argc,char **argv) {
             if (argc == 3) {
                 int numPuzzles = atoi(argv[2]);
                 if (numPuzzles > 0) {
-                    generateSudokuGame(numPuzzles, 1);  // 生成初级难度的数独游戏
-                    cout << "Successfully generated " << numPuzzles << " sudoku games of easy difficulty in sudoku_games.txt" << endl;
-                } else {
-                    cout << "Please input a valid number of games to generate." << endl;
-                }
-            } else {
-                cout << "Invalid command. Please input the number of games to generate after -n" << endl;
-                return 0;
-            }
-        } 
-		else if (!strcmp(argv[1], "-m")) {
-            if (argc == 4) {
-                int numPuzzles = atoi(argv[2]);
-                int difficulty = atoi(argv[3]);
+                    generateshudu(numPuzzles, 1);  // 生成初级难度的数独游戏
+                    cout << "Successfully generated " << numPuzzles << " shudu games of easy difficulty in shudu_games.txt" << endl;
+                } 
+			}
+			else if (string(argv[3]) == "-r") {
+				int numPuzzles = atoi(argv[2]);
+            	string range = argv[4];
+				std::vector<std::string> rangeParams = splitString(range, "~");
+        		if (rangeParams.size() != 2) {
+            		std::cout << "Invalid range parameter." << std::endl;
+            		return 0;
+        		}
+        		int minHoles = std::stoi(rangeParams[0]);
+        		int maxHoles = std::stoi(rangeParams[1]);
+            	generateshudu2(numPuzzles, minHoles, maxHoles);
+            	cout << "Successfully generated " << numPuzzles << " shudu games with holes count ranging from "
+                     	<< minHoles << " to " << maxHoles << "." << endl;
+            } 
+			else if(string(argv[3]) == "-m"){
+				int numPuzzles = atoi(argv[2]);
+                int difficulty = atoi(argv[4]);
                 if (numPuzzles > 0 && (difficulty >= 1 && difficulty <= 3)) {
-                    generateSudokuGame(numPuzzles, difficulty);
-                    cout << "Successfully generated " << numPuzzles << " sudoku games of difficulty " << difficulty << " in sudoku_games.txt" << endl;
+                    generateshudu(numPuzzles, difficulty);
+                    cout << "Successfully generated " << numPuzzles << " shudu games of difficulty " << difficulty << " in shudu_games.txt" << endl;
                 } else {
                     cout << "Please input a valid number of games and difficulty level." << endl;
                 }
-            } else {
-                cout << "Invalid command. Please input the number of games and difficulty level after -m" << endl;
-                return 0;
+			}
+			else {
+                cout << "Invalid range format. Please use the format 'min~max', where min and max are positive integers." << endl;
             }
-        } 
-
-		else {	//错误输入，报错
+    }
+	else {	//错误输入，报错
 			cout << "input cmd error!" << endl;
 			return 0;
 		}
-    } 
-	}
+    }
+        } 
+		
