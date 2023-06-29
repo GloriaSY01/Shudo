@@ -293,6 +293,74 @@ bool solveshudu() {
     }
     return true;  // 数独已填充完成
 }
+bool isValid2(int puzzle[9][9], int row, int col, int num) {
+    // 检查同一行是否存在重复数字
+    for (int i = 0; i < 9; i++) {
+        if (puzzle[row][i] == num) {
+            return false;
+        }
+    }
+
+    // 检查同一列是否存在重复数字
+    for (int i = 0; i < 9; i++) {
+        if (puzzle[i][col] == num) {
+            return false;
+        }
+    }
+
+    // 检查 3x3 方格内是否存在重复数字
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (puzzle[startRow + i][startCol + j] == num) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+int countshudusolu(int puzzle[9][9]) {
+    int count = 0;
+    int row = -1;
+    int col = -1;
+    bool isEmpty = false;
+
+    // 查找下一个空白格子
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 9; j++) {
+            if (puzzle[i][j] == 0) {
+                row = i;
+                col = j;
+                isEmpty = true;
+                break;
+            }
+        }
+        if (isEmpty) {
+            break;
+        }
+    }
+
+    // 数独已经填满，找到一个解
+    if (!isEmpty) {
+        return 1;
+    }
+
+    // 尝试填充数字 1-9
+    for (int num = 1; num <= 9; num++) {
+        if (isValid2(puzzle, row, col, num)) {
+            puzzle[row][col] = num;
+
+            count += countshudusolu(puzzle);
+
+            puzzle[row][col] = 0; // 恢复为未填入状态，继续搜索其他解
+        }
+    }
+
+    return count;
+}
+
 // 生成数独游戏(不同难度或数量)
 void generateshudu(int gamesCount, int difficulty) {
 	using namespace DEAL;
@@ -412,7 +480,71 @@ void generateshudu2(int gamesCount, int min,int max) {
 
     outputFile.close();  // 关闭输出文件
 }
+// 生成数独游戏(唯一解)
+void generateshudu3(int gamesCount, int difficulty) {
+	using namespace DEAL;
+    random_device rd;
+    mt19937 gen(rd());
 
+    ofstream outputFile("shudu_games3.txt");  // 打开输出文件
+
+    for (int i = 0; i < gamesCount; i++) {
+        // 初始化数独格子为0
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                map[row][col] = 0;
+            }
+        }
+
+        solveshudu();  // 填充数独格子
+		// 随机挖洞以创建不同的难度
+        int holesToRemove = 0;
+        if (difficulty == 1) {
+            holesToRemove = 40;  // 简单难度
+        } else if (difficulty == 2) {
+            holesToRemove = 50;  // 中等难度
+        } else if (difficulty == 3) {
+            holesToRemove = 60;  // 困难难度
+        }
+
+        vector<pair<int, int>> positions;
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                positions.push_back(make_pair(row, col));
+            }
+        }
+
+        shuffle(positions.begin(), positions.end(), gen);
+
+        for (int j = 0; j < holesToRemove; j++) {
+            int row = positions[j].first;
+            int col = positions[j].second;
+            map[row][col] = -1;  // 使用 -1 表示空白处
+        }
+		int count=countshudusolu(map);
+		if(count==1)
+		{
+			for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                if (map[row][col] == -1) {
+                    outputFile << "$";
+                } else {
+                    outputFile << map[row][col];
+                }
+
+                if (col != 8) {
+                    outputFile << " ";
+                }
+            }
+            outputFile << endl;
+        }
+        outputFile << endl;  // 添加空行分隔不同的数独游戏
+		}
+		else i--;
+    }
+
+    outputFile.close();  // 关闭输出文件
+}
 
 // 函数：字符串分割
 std::vector<std::string> splitString(const std::string& str, const std::string& delimiter) {
@@ -485,6 +617,13 @@ int main(int argc,char **argv) {
                 } else {
                     cout << "Please input a valid number of games and difficulty level." << endl;
                 }
+			}
+			else if(string(argv[3]) == "-u"){
+				int numPuzzles = atoi(argv[2]);
+				if (numPuzzles > 0) {
+                    generateshudu3(numPuzzles, 1);  // 生成初级难度的唯一解数独游戏
+                    cout << "Successfully generated " << numPuzzles << " shudu games which has only one solu in shudu_games3.txt" << endl;
+                } 
 			}
 			else {
                 cout << "Invalid range format. Please use the format 'min~max', where min and max are positive integers." << endl;
