@@ -103,6 +103,7 @@ int produceOutputIntoTxt(int produce_num) {		//本函数用于生成数独终局
 	} while (next_permutation(cols + 1, cols + 3));
 
 	cout << "over or err" << endl;
+    fclose(fp);
 	return 0;
 }
 int dealQuestion(char* path) {
@@ -128,7 +129,7 @@ int dealQuestion(char* path) {
         };
         x = 0; y = 0;
 
-        {            //用来初始化一些值
+        {   //用来初始化一些值
             memset(bs, 0, sizeof(bs));
             memset(_col, 0, sizeof(_col));
             memset(_block, 0, sizeof(_block));
@@ -647,8 +648,8 @@ int main(int argc,char **argv) {
 	else {	//错误输入，报错
 			cout << "input cmd error!" << endl;
 			return 0;
-		}
+		 }
     }
-        } 
+} 
 
 
